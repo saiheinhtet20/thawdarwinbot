@@ -682,7 +682,7 @@ const showDoctor =(sender_psid) => {
           {
             "title": "Dr.Rosy",
             "subtitle": "Suitable (3-6 people)",
-            "image_url":"https://images.theconversation.com/files/304957/original/file-20191203-66986-im7o5.jpg",                       
+            "image_url":"https://i.dlpng.com/static/png/5855552-female-doctor-transparent-images-png-arts-doctor-png-female-615_550_preview.png",                       
             "buttons": [
                 {
                   "type": "postback",
@@ -694,7 +694,7 @@ const showDoctor =(sender_psid) => {
           {
             "title": "Dr.Philip",
             "subtitle": "Suitable (4-10 people)",
-            "image_url":"https://cdn.sanity.io/images/0vv8moc6/hcplive/0ebb6a8f0c2850697532805d09d4ff10e838a74b-200x200.jpg",                       
+            "image_url":"https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
