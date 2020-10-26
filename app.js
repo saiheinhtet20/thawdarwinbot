@@ -668,38 +668,38 @@ const showDoctor =(sender_psid) => {
         "payload": {
           "template_type": "generic",
           "elements": [{
-            "title": "Normal Doctor",
+            "title": "Dr.John",
             "subtitle": "Suitable (2-4 people)",
             "image_url":"https://s3-eu-west-1.amazonaws.com/intercare-web-public/wysiwyg-uploads%2F1569586526901-doctor.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Normal Doctor",
-                  "payload": "Doctor:Normal Doctor",
+                  "title": "Dr.John",
+                  "payload": "Doctor:Dr.John",
                 }
               ],
           },
           {
-            "title": "Medium Doctor",
+            "title": "Dr.Rosy",
             "subtitle": "Suitable (3-6 people)",
             "image_url":"https://images.theconversation.com/files/304957/original/file-20191203-66986-im7o5.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Medium Doctor",
-                  "payload": "Doctor:Medium Doctor",
+                  "title": "Dr.Rosy",
+                  "payload": "Doctor:Dr.Rosy",
                 }
               ],
           },
           {
-            "title": "Family Doctor",
+            "title": "Dr.Philip",
             "subtitle": "Suitable (4-10 people)",
             "image_url":"https://cdn.sanity.io/images/0vv8moc6/hcplive/0ebb6a8f0c2850697532805d09d4ff10e838a74b-200x200.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Family Doctor",
-                  "payload": "Doctor:Family Doctor",
+                  "title": "Dr.Philip",
+                  "payload": "Doctor:Dr.Philip",
                 }
               ],
           }
