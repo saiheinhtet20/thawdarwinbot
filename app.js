@@ -388,10 +388,10 @@ function handleQuickReply(sender_psid, received_message) {
     userInputs[user_id].visit=visit;
     current_question='q1';
     botQuestions(current_question, sender_psid);
-  }else if(received_message.startsWith("roomfood:")){
+  }else if(received_message.startsWith("appointment:")){
     let r_f=received_message.slice(9);
     userInputs[user_id].appointment=r_f;
-    showRoom(sender_psid);
+    showDoctor(sender_psid);
 
   }else{
     switch(received_message) {     
@@ -402,7 +402,7 @@ function handleQuickReply(sender_psid, received_message) {
             showQuickReplyOff(sender_psid);
           break;   
         case "confirm-roombooking":
-            saveRoomBooking(userInputs[user_id], sender_psid);
+            saveDoctorBooking(userInputs[user_id], sender_psid);
           break;             
         default:
             defaultReply(sender_psid);
@@ -541,7 +541,7 @@ const handlePostback = (sender_psid, received_postback) => {
   let payload = received_postback.payload;
   console.log('BUTTON PAYLOAD', payload);
   
-  if(payload.startsWith("Room:")){
+  if(payload.startsWith("Doctor:")){
     let room_type=payload.slice(5);
     console.log("SELECTED ROOM IS: ", room_type);
     userInputs[user_id].room=room_type;
@@ -642,16 +642,16 @@ start room
 const appointment =(sender_psid) => {
   let response1 = {"text": "Welcome to Thawdar Win Clinic"};
   let response2 = {
-    "text": "Please Select Room or Food",
+    "text": "Please Select General Physician or Dermatology",
     "quick_replies":[
             {
               "content_type":"text",
-              "title":"Room",
-              "payload":"roomfood:Room",              
+              "title":"General Physician",
+              "payload":"appointment:General Physician",              
             },{
               "content_type":"text",
-              "title":"Food",
-              "payload":"roomfood:Food",             
+              "title":"Dermatology",
+              "payload":"appointment:Dermatology",             
             }
     ]
   };
@@ -661,45 +661,45 @@ const appointment =(sender_psid) => {
 
 }
 
-const showRoom =(sender_psid) => {
+const showDoctor =(sender_psid) => {
   let response = {
       "attachment": {
         "type": "template",
         "payload": {
           "template_type": "generic",
           "elements": [{
-            "title": "Normal Room",
+            "title": "Normal Doctor",
             "subtitle": "Suitable (2-4 people)",
             "image_url":"https://i1.sndcdn.com/avatars-JtzQf3QtJMEKuyWY-lr0XdA-t500x500.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Normal Room",
-                  "payload": "Room:Normal Room",
+                  "title": "Normal Doctor",
+                  "payload": "Doctor:Normal Doctor",
                 }
               ],
           },
           {
-            "title": "Medium Room",
+            "title": "Medium Doctor",
             "subtitle": "Suitable (3-6 people)",
             "image_url":"https://imaginahome.com/wp-content/uploads/2017/06/wet-bar-design-ideas-1920x1280.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Medium Room",
-                  "payload": "Room:Medium Room",
+                  "title": "Medium Doctor",
+                  "payload": "Doctor:Medium Doctor",
                 }
               ],
           },
           {
-            "title": "Family Room",
+            "title": "Family Doctor",
             "subtitle": "Suitable (4-10 people)",
             "image_url":"https://i02.appmifile.com/564_bbs_en/30/04/2020/bad9864ed3.png",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Family Room",
-                  "payload": "Room:Family Room",
+                  "title": "Family Doctor",
+                  "payload": "Doctor:Family Doctor",
                 }
               ],
           }
@@ -788,7 +788,7 @@ const confirmAppointment = (sender_psid) => {
 
   }
   
-const saveRoomBooking = async (arg, sender_psid) =>{
+const saveDoctorBooking = async (arg, sender_psid) =>{
   let data=arg;
   data.ref= generateRandom(6);
   data.status = "pending";
