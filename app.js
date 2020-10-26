@@ -388,7 +388,7 @@ function handleQuickReply(sender_psid, received_message) {
     userInputs[user_id].visit=visit;
     current_question='q1';
     botQuestions(current_question, sender_psid);
-  }else if(received_message.startsWith("roomfood:")){
+  }else if(received_message.startsWith("appointmenttype:")){
     let r_f=received_message.slice(9);
     userInputs[user_id].appointment=r_f;
     showDoctor(sender_psid);
@@ -542,9 +542,9 @@ const handlePostback = (sender_psid, received_postback) => {
   console.log('BUTTON PAYLOAD', payload);
   
   if(payload.startsWith("Doctor:")){
-    let room_type=payload.slice(5);
-    console.log("SELECTED ROOM IS: ", room_type);
-    userInputs[user_id].room=room_type;
+    let doctor_type=payload.slice(5);
+    console.log("SELECTED ROOM IS: ", doctor_type);
+    userInputs[user_id].doctor=doctor_type;
     console.log('TEST',userInputs);
     firstOrFollowup(sender_psid);
   }
@@ -637,7 +637,7 @@ function webviewTest(sender_psid){
 
 
 /****************
-start room 
+start doctor 
 ****************/
 const appointment =(sender_psid) => {
   let response1 = {"text": "Welcome to Thawdar Win Clinic"};
@@ -647,11 +647,11 @@ const appointment =(sender_psid) => {
             {
               "content_type":"text",
               "title":"Doctor",
-              "payload":"roomfood:Doctor",              
+              "payload":"appointmenttype:Doctor",              
             },{
               "content_type":"text",
               "title":"Dermatology",
-              "payload":"roomfood:Dermatology",             
+              "payload":"appointmenttype:Dermatology",             
             }
     ]
   };
@@ -756,7 +756,7 @@ const botQuestions = (current_question,sender_psid) => {
 const confirmAppointment = (sender_psid) => {
   console.log('BOOKING INFO',userInputs);
    let Summary = "appointment:" + userInputs[user_id].appointment + "\u000A";
-   Summary += "room:" + userInputs[user_id].room + "\u000A";
+   Summary += "doctor:" + userInputs[user_id].doctor + "\u000A";
    Summary += "visit:" + userInputs[user_id].visit + "\u000A";
    Summary += "date:" + userInputs[user_id].date + "\u000A";
    Summary += "time:" + userInputs[user_id].time + "\u000A";
@@ -804,12 +804,12 @@ const saveDoctorBooking = async (arg, sender_psid) =>{
     });
   }
 /****************
-end room 
+end doctor 
 ****************/
 
 
 const hiReply =(sender_psid) => {
-  let response = {"text": "Hello user, you can make room booking"};
+  let response = {"text": "Hello user, you can make doctor booking"};
   callSend(sender_psid, response);
 }
 
