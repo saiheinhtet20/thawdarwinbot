@@ -670,7 +670,7 @@ const showDoctor =(sender_psid) => {
           "elements": [{
             "title": "Normal Doctor",
             "subtitle": "Suitable (2-4 people)",
-            "image_url":"https://i1.sndcdn.com/avatars-JtzQf3QtJMEKuyWY-lr0XdA-t500x500.jpg",                       
+            "image_url":"https://s3-eu-west-1.amazonaws.com/intercare-web-public/wysiwyg-uploads%2F1569586526901-doctor.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
@@ -682,7 +682,7 @@ const showDoctor =(sender_psid) => {
           {
             "title": "Medium Doctor",
             "subtitle": "Suitable (3-6 people)",
-            "image_url":"https://imaginahome.com/wp-content/uploads/2017/06/wet-bar-design-ideas-1920x1280.jpg",                       
+            "image_url":"https://images.theconversation.com/files/304957/original/file-20191203-66986-im7o5.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
@@ -694,7 +694,7 @@ const showDoctor =(sender_psid) => {
           {
             "title": "Family Doctor",
             "subtitle": "Suitable (4-10 people)",
-            "image_url":"https://i02.appmifile.com/564_bbs_en/30/04/2020/bad9864ed3.png",                       
+            "image_url":"https://cdn.sanity.io/images/0vv8moc6/hcplive/0ebb6a8f0c2850697532805d09d4ff10e838a74b-200x200.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
