@@ -389,7 +389,7 @@ function handleQuickReply(sender_psid, received_message) {
     current_question='q1';
     botQuestions(current_question, sender_psid);
   }else if(received_message.startsWith("appointmenttype:")){
-    let r_f=received_message.slice(9);
+    let r_f=received_message.slice(11);
     userInputs[user_id].appointment=r_f;
     showDoctor(sender_psid);
 
