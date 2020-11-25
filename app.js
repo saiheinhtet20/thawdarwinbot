@@ -145,63 +145,63 @@ app.post('/test',function(req,res){
     callSend(sender_psid, response);
 });
 
-app.get('/admin/doctorbookings', async function(req,res){
-  const doctorbookingsRef = db.collection('doctorbookings');
-  const snapshot = await doctorbookingsRef.get();
-  if(snapshot.empty){
-    res.send('no data');
-  }
+// app.get('/admin/doctorbookings', async function(req,res){
+//   const doctorbookingsRef = db.collection('doctorbookings');
+//   const snapshot = await doctorbookingsRef.get();
+//   if(snapshot.empty){
+//     res.send('no data');
+//   }
 
-  let data = [];
+//   let data = [];
 
-  snapshot.forEach(doc => {
-    let doctorbooking ={};
-    doctorbooking = doc.data();
-    doctorbooking.doc_id = doc.id;
+//   snapshot.forEach(doc => {
+//     let doctorbooking ={};
+//     doctorbooking = doc.data();
+//     doctorbooking.doc_id = doc.id;
 
-    data.push(doctorbooking);
+//     data.push(doctorbooking);
     
-  });
+//   });
 
-  console.log('DATA:', data);
+//   console.log('DATA:', data);
 
-  res.render('doctorbookings.ejs', {data:data});
-});
+//   res.render('doctorbookings.ejs', {data:data});
+// });
 
-app.get('/admin/updatedoctorbooking/:doc_id', async function(req,res){
-  let doc_id = req.params.doc_id;
+// app.get('/admin/updatedoctorbooking/:doc_id', async function(req,res){
+//   let doc_id = req.params.doc_id;
     
-  const doctorbookingRef = db.collection('doctorbookings').doc(doc_id);
-  const doc = await doctorbookingRef.get();
-  if (!doc.exists){
-    console.log('No such document!');s
-  }else{
-    console.log('Document data:', doc.data());
-    let data = doc.data();
-    data.doc_id = doc_id;
+//   const doctorbookingRef = db.collection('doctorbookings').doc(doc_id);
+//   const doc = await doctorbookingRef.get();
+//   if (!doc.exists){
+//     console.log('No such document!');s
+//   }else{
+//     console.log('Document data:', doc.data());
+//     let data = doc.data();
+//     data.doc_id = doc_id;
 
-    console.log('Document data:', data);
-    res.render('editdoctorbookings.ejs',{data:data});
-  }
-});
+//     console.log('Document data:', data);
+//     res.render('editdoctorbookings.ejs',{data:data});
+//   }
+// });
 
-app.post('/admin/updatedoctorbooking/', async function(req,res){
-  console.log('REQ:', req.body);
+// app.post('/admin/updatedoctorbooking/', async function(req,res){
+//   console.log('REQ:', req.body);
 
-  // const doctorbookingRef = db.collection('doctorbookings').doc('DC');
-  // const res  = await doctorbookingRef.update
+//   // const doctorbookingRef = db.collection('doctorbookings').doc('DC');
+//   // const res  = await doctorbookingRef.update
     
-  res.send('ok');
-  // const doctorbookingRef = db.collection('doctorbookings').doc(doc_id);
-  // const doc = await doctorbookingRef.get();
-  // if (!doc.exists){
-  //   console.log('No such document!');s
-  // }else{
-  //   console.log('Document data:', doc.data());
-  //   let data = doc.data();
-  //   res.render('editdoctorbookings.ejs',{data:data});
-  // }
-});
+//   res.send('ok');
+//   // const doctorbookingRef = db.collection('doctorbookings').doc(doc_id);
+//   // const doc = await doctorbookingRef.get();
+//   // if (!doc.exists){
+//   //   console.log('No such document!');s
+//   // }else{
+//   //   console.log('Document data:', doc.data());
+//   //   let data = doc.data();
+//   //   res.render('editdoctorbookings.ejs',{data:data});
+//   // }
+// });
 
 /*********************************************
 Gallery page
@@ -389,7 +389,7 @@ function handleQuickReply(sender_psid, received_message) {
     current_question='q1';
     botQuestions(current_question, sender_psid);
   }else if(received_message.startsWith("appointmenttype:")){
-    let r_f=received_message.slice(11);
+    let r_f=received_message.slice(16);
     userInputs[user_id].appointment=r_f;
     showDoctor(sender_psid);
 
@@ -542,8 +542,8 @@ const handlePostback = (sender_psid, received_postback) => {
   console.log('BUTTON PAYLOAD', payload);
   
   if(payload.startsWith("Doctor:")){
-    let doctor_type=payload.slice(5);
-    console.log("SELECTED ROOM IS: ", doctor_type);
+    let doctor_type=payload.slice(7);
+    console.log("SELECTED TYPE IS: ", doctor_type);
     userInputs[user_id].doctor=doctor_type;
     console.log('TEST',userInputs);
     firstOrFollowup(sender_psid);
