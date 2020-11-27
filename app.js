@@ -145,63 +145,70 @@ app.post('/test',function(req,res){
     callSend(sender_psid, response);
 });
 
-// app.get('/admin/doctorbookings', async function(req,res){
-//   const doctorbookingsRef = db.collection('doctorbookings');
-//   const snapshot = await doctorbookingsRef.get();
-//   if(snapshot.empty){
-//     res.send('no data');
-//   }
+app.get('/admin/roombookings', async function(req,res){
+  const roombookingsRef = db.collection('roombookings');
+  const snapshot = await roombookingsRef.get();
+  if(snapshot.empty){
+    res.send('no data');
+  }
 
-//   let data = [];
+  let data = [];
 
-//   snapshot.forEach(doc => {
-//     let doctorbooking ={};
-//     doctorbooking = doc.data();
-//     doctorbooking.doc_id = doc.id;
+  snapshot.forEach(doc => {
+    let roombooking ={};
+    roombooking = doc.data();
+    roombooking.doc_id = doc.id;
 
-//     data.push(doctorbooking);
+    data.push(roombooking);
     
-//   });
+  });
 
-//   console.log('DATA:', data);
+  console.log('DATA:', data);
 
-//   res.render('doctorbookings.ejs', {data:data});
-// });
+  res.render('roombookings.ejs', {data:data});
+});
 
-// app.get('/admin/updatedoctorbooking/:doc_id', async function(req,res){
-//   let doc_id = req.params.doc_id;
+app.get('/admin/updateroombooking/:doc_id', async function(req,res){
+  let doc_id = req.params.doc_id;
     
-//   const doctorbookingRef = db.collection('doctorbookings').doc(doc_id);
-//   const doc = await doctorbookingRef.get();
-//   if (!doc.exists){
-//     console.log('No such document!');s
-//   }else{
-//     console.log('Document data:', doc.data());
-//     let data = doc.data();
-//     data.doc_id = doc_id;
+  const roombookingRef = db.collection('roombookings').doc(doc_id);
+  const doc = await roombookingRef.get();
+  if (!doc.exists){
+    console.log('No such document!');
+  }else{
+    console.log('Document data:', doc.data());
+    let data = doc.data();
+    data.doc_id = doc_id;
 
-//     console.log('Document data:', data);
-//     res.render('editdoctorbookings.ejs',{data:data});
-//   }
-// });
+    console.log('Document data:', data);
+    res.render('editroombooking.ejs', {data:data});
+  }
+});
 
-// app.post('/admin/updatedoctorbooking/', async function(req,res){
-//   console.log('REQ:', req.body);
+app.post('/admin/updateroombooking', async function(req,res){
+  console.log('REQ:', req.body);
+  
+  let data = {
+    name:req.body.name,
+    phone:req.body.phone,
+    email:req.body.email,
+    room:req.body.room,
+    visit:req.body.visit,
+    date:req.body.date,
+    time:req.body.time,
+    message:req.body.message,
+    status:req.body.status,
+    doc_id:req.body.doc_id,
+    ref:req.body.ref
+    // comment:req.body.comment
+  }
+  
+  db.collection('roombookings').doc(req.body.doc_id)
+  .update(data).then(()=>{
+    res.redirect('/admin/roombookings');
+  }).catch((err)=>console.log('ERROR:',error));
 
-//   // const doctorbookingRef = db.collection('doctorbookings').doc('DC');
-//   // const res  = await doctorbookingRef.update
-    
-//   res.send('ok');
-//   // const doctorbookingRef = db.collection('doctorbookings').doc(doc_id);
-//   // const doc = await doctorbookingRef.get();
-//   // if (!doc.exists){
-//   //   console.log('No such document!');s
-//   // }else{
-//   //   console.log('Document data:', doc.data());
-//   //   let data = doc.data();
-//   //   res.render('editdoctorbookings.ejs',{data:data});
-//   // }
-// });
+});
 
 /*********************************************
 Gallery page
@@ -388,10 +395,10 @@ function handleQuickReply(sender_psid, received_message) {
     userInputs[user_id].visit=visit;
     current_question='q1';
     botQuestions(current_question, sender_psid);
-  }else if(received_message.startsWith("appointmenttype:")){
-    let r_f=received_message.slice(16);
+  }else if(received_message.startsWith("roomfood:")){
+    let r_f=received_message.slice(9);
     userInputs[user_id].appointment=r_f;
-    showDoctor(sender_psid);
+    showRoom(sender_psid);
 
   }else{
     switch(received_message) {     
@@ -401,8 +408,8 @@ function handleQuickReply(sender_psid, received_message) {
         case "off":
             showQuickReplyOff(sender_psid);
           break;   
-        case "confirm-doctorbooking":
-            saveDoctorBooking(userInputs[user_id], sender_psid);
+        case "confirm-roombooking":
+            saveRoomBooking(userInputs[user_id], sender_psid);
           break;             
         default:
             defaultReply(sender_psid);
@@ -541,10 +548,10 @@ const handlePostback = (sender_psid, received_postback) => {
   let payload = received_postback.payload;
   console.log('BUTTON PAYLOAD', payload);
   
-  if(payload.startsWith("Doctor:")){
-    let doctor_type=payload.slice(7);
-    console.log("SELECTED TYPE IS: ", doctor_type);
-    userInputs[user_id].doctor=doctor_type;
+  if(payload.startsWith("Room:")){
+    let room_type=payload.slice(5);
+    console.log("SELECTED ROOM IS: ", room_type);
+    userInputs[user_id].room=room_type;
     console.log('TEST',userInputs);
     firstOrFollowup(sender_psid);
   }
@@ -637,21 +644,21 @@ function webviewTest(sender_psid){
 
 
 /****************
-start doctor 
+start room 
 ****************/
 const appointment =(sender_psid) => {
-  let response1 = {"text": "Welcome to ThawdarWin Clinic"};
+  let response1 = {"text": "Welcome to Royal World Bar"};
   let response2 = {
-    "text": "Please Select Doctor or Dermatology",
+    "text": "Please Select Room or Food",
     "quick_replies":[
             {
               "content_type":"text",
-              "title":"Doctor",
-              "payload":"appointmenttype:Doctor",              
+              "title":"Room",
+              "payload":"roomfood:Room",              
             },{
               "content_type":"text",
-              "title":"Dermatology",
-              "payload":"appointmenttype:Dermatology",             
+              "title":"Food",
+              "payload":"roomfood:Food",             
             }
     ]
   };
@@ -661,45 +668,45 @@ const appointment =(sender_psid) => {
 
 }
 
-const showDoctor =(sender_psid) => {
+const showRoom =(sender_psid) => {
   let response = {
       "attachment": {
         "type": "template",
         "payload": {
           "template_type": "generic",
           "elements": [{
-            "title": "Dr.John",
+            "title": "Normal Room",
             "subtitle": "Suitable (2-4 people)",
-            "image_url":"https://s3-eu-west-1.amazonaws.com/intercare-web-public/wysiwyg-uploads%2F1569586526901-doctor.jpg",                       
+            "image_url":"https://i1.sndcdn.com/avatars-JtzQf3QtJMEKuyWY-lr0XdA-t500x500.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Dr.John",
-                  "payload": "Doctor:Dr.John",
+                  "title": "Normal Room",
+                  "payload": "Room:Normal Room",
                 }
               ],
           },
           {
-            "title": "Dr.Rosy",
+            "title": "Medium Room",
             "subtitle": "Suitable (3-6 people)",
-            "image_url":"https://i.dlpng.com/static/png/5855552-female-doctor-transparent-images-png-arts-doctor-png-female-615_550_preview.png",                       
+            "image_url":"https://imaginahome.com/wp-content/uploads/2017/06/wet-bar-design-ideas-1920x1280.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Dr.Rosy",
-                  "payload": "Doctor:Dr.Rosy",
+                  "title": "Medium Room",
+                  "payload": "Room:Medium Room",
                 }
               ],
           },
           {
-            "title": "Dr.Philip",
+            "title": "Family Room",
             "subtitle": "Suitable (4-10 people)",
-            "image_url":"https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg",                       
+            "image_url":"https://i02.appmifile.com/564_bbs_en/30/04/2020/bad9864ed3.png",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Dr.Philip",
-                  "payload": "Doctor:Dr.Philip",
+                  "title": "Family Room",
+                  "payload": "Room:Family Room",
                 }
               ],
           }
@@ -756,7 +763,7 @@ const botQuestions = (current_question,sender_psid) => {
 const confirmAppointment = (sender_psid) => {
   console.log('BOOKING INFO',userInputs);
    let Summary = "appointment:" + userInputs[user_id].appointment + "\u000A";
-   Summary += "doctor:" + userInputs[user_id].doctor + "\u000A";
+   Summary += "room:" + userInputs[user_id].room + "\u000A";
    Summary += "visit:" + userInputs[user_id].visit + "\u000A";
    Summary += "date:" + userInputs[user_id].date + "\u000A";
    Summary += "time:" + userInputs[user_id].time + "\u000A";
@@ -774,7 +781,7 @@ const confirmAppointment = (sender_psid) => {
             {
               "content_type":"text",
               "title":"Confirm",
-              "payload":"confirm-doctorbooking",              
+              "payload":"confirm-roombooking",              
             },{
               "content_type":"text",
               "title":"Cancel",
@@ -788,11 +795,11 @@ const confirmAppointment = (sender_psid) => {
 
   }
   
-const saveDoctorBooking = async (arg, sender_psid) =>{
+const saveRoomBooking = async (arg, sender_psid) =>{
   let data=arg;
   data.ref= generateRandom(6);
   data.status = "pending";
-  db.collection('doctorbookings').add(data).then((success)=>{
+  db.collection('roombookings').add(data).then((success)=>{
       console.log("SAVED", success);
       let text = "Thank you. We have received your appointment."+ "\u000A";
       text += "We will call you very soon to confirm"+ "\u000A";
@@ -804,12 +811,12 @@ const saveDoctorBooking = async (arg, sender_psid) =>{
     });
   }
 /****************
-end doctor 
+end room 
 ****************/
 
 
 const hiReply =(sender_psid) => {
-  let response = {"text": "Hello user, you can make doctor booking"};
+  let response = {"text": "Hello user, you can make room booking"};
   callSend(sender_psid, response);
 }
 
