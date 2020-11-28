@@ -10,6 +10,7 @@
 
 	<table cellspacing="1" cellpadding="5" border="1">
 		<tr>
+			<th>Document ID</th>
 			<th>Name</th>
 			<th>Phone</th>
 			<th>Email</th>
@@ -26,6 +27,7 @@
 
 	<% data.forEach(function(doctorbooking){ %>
 		<tr>
+			<td><%= doctorbooking.doc_id %></td>
 			<td><%= doctorbooking.name %></td>
 			<td><%= doctorbooking.phone %></td>
 			<td><%= doctorbooking.email %></td>
