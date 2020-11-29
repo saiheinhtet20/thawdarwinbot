@@ -24,8 +24,6 @@ app.use(body_parser.json());
 app.use(body_parser.urlencoded());
 
 const bot_questions ={
-"q1": "Please enter date (yyyy-mm-dd)",
-"q2": "Please enter time (hh:mm)",
 "q3": "Please enter full name",
 "q4": "Please enter phone",
 "q5": "Please enter email",
@@ -145,9 +143,9 @@ app.post('/test',function(req,res){
     callSend(sender_psid, response);
 });
 
-app.get('/admin/doctorbookings', async function(req,res){
-  const doctorbookingsRef = db.collection('doctorbookings');
-  const snapshot = await doctorbookingsRef.get();
+app.get('/admin/itemorders', async function(req,res){
+  const itemordersRef = db.collection('itemorders');
+  const snapshot = await itemordersRef.get();
   if(snapshot.empty){
     res.send('no data');
   }
@@ -155,24 +153,24 @@ app.get('/admin/doctorbookings', async function(req,res){
   let data = [];
 
   snapshot.forEach(doc => {
-    let doctorbooking ={};
-    doctorbooking = doc.data();
-    doctorbooking.doc_id = doc.id;
+    let itemorder ={};
+    itemorder = doc.data();
+    itemorder.doc_id = doc.id;
 
-    data.push(doctorbooking);
+    data.push(itemorder);
     
   });
 
   console.log('DATA:', data);
 
-  res.render('doctorbookings.ejs', {data:data});
+  res.render('itemorders.ejs', {data:data});
 });
 
-app.get('/admin/updatedoctorbooking/:doc_id', async function(req,res){
+app.get('/admin/updateitemorder/:doc_id', async function(req,res){
   let doc_id = req.params.doc_id;
     
-  const doctorbookingRef = db.collection('doctorbookings').doc(doc_id);
-  const doc = await doctorbookingRef.get();
+  const itemorderRef = db.collection('itemorders').doc(doc_id);
+  const doc = await itemorderRef.get();
   if (!doc.exists){
     console.log('No such document!');s
   }else{
@@ -181,25 +179,25 @@ app.get('/admin/updatedoctorbooking/:doc_id', async function(req,res){
     data.doc_id = doc_id;
 
     console.log('Document data:', data);
-    res.render('editdoctorbookings.ejs',{data:data});
+    res.render('edititemorders.ejs',{data:data});
   }
 });
 
-app.post('/admin/updatedoctorbooking', async function(req,res){
+app.post('/admin/updateitemorder/', async function(req,res){
   console.log('REQ:', req.body);
 
-  // const doctorbookingRef = db.collection('doctorbookings').doc('DC');
-  // const res  = await doctorbookingRef.update
+  // const itemorderRef = db.collection('itemorders').doc('DC');
+  // const res  = await itemorderRef.update
     
   res.send('ok');
-  // const doctorbookingRef = db.collection('doctorbookings').doc(doc_id);
-  // const doc = await doctorbookingRef.get();
+  // const itemorderRef = db.collection('itemorders').doc(doc_id);
+  // const doc = await itemorderRef.get();
   // if (!doc.exists){
   //   console.log('No such document!');s
   // }else{
   //   console.log('Document data:', doc.data());
   //   let data = doc.data();
-  //   res.render('editdoctorbookings.ejs',{data:data});
+  //   res.render('edititemorders.ejs',{data:data});
   // }
 });
 
@@ -386,23 +384,23 @@ function handleQuickReply(sender_psid, received_message) {
   if(received_message.startsWith("visit:")){
     let visit=received_message.slice(6);
     userInputs[user_id].visit=visit;
-    current_question='q1';
+    current_question='q3';
     botQuestions(current_question, sender_psid);
-  }else if(received_message.startsWith("appointmenttype:")){
-    let r_f=received_message.slice(16);
-    userInputs[user_id].appointment=r_f;
-    showDoctor(sender_psid);
+  }else if(received_message.startsWith("product:")){
+    let r_f=received_message.slice(9);
+    userInputs[user_id].order=r_f;
+    showProduct(sender_psid);
 
   }else{
     switch(received_message) {     
         case "on":
             showQuickReplyOn(sender_psid);
           break;
-        case "off":
+        case "off":w
             showQuickReplyOff(sender_psid);
           break;   
-        case "confirm-doctorbooking":
-            saveDoctorBooking(userInputs[user_id], sender_psid);
+        case "confirm-itemorder":
+            saveProductBooking(userInputs[user_id], sender_psid);
           break;             
         default:
             defaultReply(sender_psid);
@@ -424,16 +422,6 @@ const handleMessage = (sender_psid, received_message) => {
 
   if(received_message.attachments){
      handleAttachments(sender_psid, received_message.attachments);
-  }else if(current_question == 'q1'){
-    console.log('DATE ENTERED',received_message.text);
-    userInputs[user_id].date=received_message.text;
-    current_question='q2';
-    botQuestions(current_question,sender_psid);
-  }else if(current_question == 'q2'){
-    console.log('TIME ENTERED',received_message.text);
-    userInputs[user_id].time=received_message.text;
-    current_question='q3';
-    botQuestions(current_question,sender_psid);
   }else if(current_question == 'q3'){
     console.log('FULL NAME ENTERED',received_message.text);
     userInputs[user_id].name=received_message.text;
@@ -454,7 +442,7 @@ const handleMessage = (sender_psid, received_message) => {
     userInputs[user_id].message=received_message.text;
     current_question='';
 
-    confirmAppointment(sender_psid);
+    confirmOrder(sender_psid);
   }
 
   else {
@@ -470,8 +458,8 @@ const handleMessage = (sender_psid, received_message) => {
       case "mingalarbar":
           greetInMyanmar(sender_psid);
         break;
-      case "appointment":
-          appointment(sender_psid);
+      case "order":
+          order(sender_psid);
         break;
       case "text":
         textReply(sender_psid);
@@ -541,10 +529,10 @@ const handlePostback = (sender_psid, received_postback) => {
   let payload = received_postback.payload;
   console.log('BUTTON PAYLOAD', payload);
   
-  if(payload.startsWith("Doctor:")){
-    let doctor_type=payload.slice(7);
-    console.log("SELECTED TYPE IS: ", doctor_type);
-    userInputs[user_id].doctor=doctor_type;
+  if(payload.startsWith("Product:")){
+    let room_type=payload.slice(5);
+    console.log("SELECTED ROOM IS: ", room_type);
+    userInputs[user_id].room=room_type;
     console.log('TEST',userInputs);
     firstOrFollowup(sender_psid);
   }
@@ -637,21 +625,21 @@ function webviewTest(sender_psid){
 
 
 /****************
-start doctor 
+start room 
 ****************/
-const appointment =(sender_psid) => {
-  let response1 = {"text": "Welcome to ThawdarWin Clinic"};
+const order =(sender_psid) => {
+  let response1 = {"text": "Welcome to SENG Shop"};
   let response2 = {
-    "text": "Please Select Doctor or Dermatology",
+    "text": "Please Select Oil Cake or Peanut Oil",
     "quick_replies":[
             {
               "content_type":"text",
-              "title":"Doctor",
-              "payload":"appointmenttype:Doctor",              
+              "title":"Oil Cake",
+              "payload":"product:Product",              
             },{
               "content_type":"text",
-              "title":"Dermatology",
-              "payload":"appointmenttype:Dermatology",             
+              "title":"Peanut Oil",
+              "payload":"product:Food",             
             }
     ]
   };
@@ -661,49 +649,36 @@ const appointment =(sender_psid) => {
 
 }
 
-const showDoctor =(sender_psid) => {
+const showProduct =(sender_psid) => {
   let response = {
       "attachment": {
         "type": "template",
         "payload": {
           "template_type": "generic",
           "elements": [{
-            "title": "Dr.John",
-            "subtitle": "Suitable (2-4 people)",
-            "image_url":"https://s3-eu-west-1.amazonaws.com/intercare-web-public/wysiwyg-uploads%2F1569586526901-doctor.jpg",                       
+            "title": "Olive Oil Cake",
+            "subtitle": "Bon Appetit",
+            "image_url":"https://i.pinimg.com/236x/f6/15/77/f61577e4eb47fb4f693fe4036b8fa7f6.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Dr.John",
-                  "payload": "Doctor:Dr.John",
+                  "title": "Olive Oil Cake",
+                  "payload": "Product:Olive Oil Cake",
                 }
               ],
           },
           {
-            "title": "Dr.Rosy",
-            "subtitle": "Suitable (3-6 people)",
-            "image_url":"https://i.dlpng.com/static/png/5855552-female-doctor-transparent-images-png-arts-doctor-png-female-615_550_preview.png",                       
+            "title": "Classic Olive Oil Cake",
+            "subtitle": "Bake from Scratch",
+            "image_url":"https://images-eu.ssl-images-amazon.com/images/I/51zOKAleUYL._SY300_QL70_ML2_.jpg",                       
             "buttons": [
                 {
                   "type": "postback",
-                  "title": "Dr.Rosy",
-                  "payload": "Doctor:Dr.Rosy",
-                }
-              ],
-          },
-          {
-            "title": "Dr.Philip",
-            "subtitle": "Suitable (4-10 people)",
-            "image_url":"https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg",                       
-            "buttons": [
-                {
-                  "type": "postback",
-                  "title": "Dr.Philip",
-                  "payload": "Doctor:Dr.Philip",
+                  "title": "Classic Olive Oil Cake",
+                  "payload": "Product:Classic Olive Oil Cake",
                 }
               ],
           }
-
           ]
         }
       }
@@ -731,13 +706,7 @@ const firstOrFollowup =(sender_psid) => {
 }
 
 const botQuestions = (current_question,sender_psid) => {
-  if(current_question =='q1'){
-    let response = {"text": bot_questions.q1};
-  callSend(sender_psid, response);
-  }else if(current_question =='q2'){
-    let response = {"text": bot_questions.q2};
-  callSend(sender_psid, response);
-  }else if(current_question =='q3'){
+  if(current_question =='q3'){
     let response = {"text": bot_questions.q3};
   callSend(sender_psid, response);
   }else if(current_question =='q4'){
@@ -753,13 +722,11 @@ const botQuestions = (current_question,sender_psid) => {
 
 }
 
-const confirmAppointment = (sender_psid) => {
-  console.log('BOOKING INFO',userInputs);
-   let Summary = "appointment:" + userInputs[user_id].appointment + "\u000A";
-   Summary += "doctor:" + userInputs[user_id].doctor + "\u000A";
+const confirmOrder = (sender_psid) => {
+  console.log('ORDER INFO',userInputs);
+   let Summary = "order:" + userInputs[user_id].order + "\u000A";
+   Summary += "room:" + userInputs[user_id].room + "\u000A";
    Summary += "visit:" + userInputs[user_id].visit + "\u000A";
-   Summary += "date:" + userInputs[user_id].date + "\u000A";
-   Summary += "time:" + userInputs[user_id].time + "\u000A";
    Summary += "name:" + userInputs[user_id].name + "\u000A";
    Summary += "phone:" + userInputs[user_id].phone + "\u000A";
    Summary += "email:" + userInputs[user_id].email + "\u000A";
@@ -774,7 +741,7 @@ const confirmAppointment = (sender_psid) => {
             {
               "content_type":"text",
               "title":"Confirm",
-              "payload":"confirm-doctorbooking",              
+              "payload":"confirm-itemorder",              
             },{
               "content_type":"text",
               "title":"Cancel",
@@ -788,13 +755,13 @@ const confirmAppointment = (sender_psid) => {
 
   }
   
-const saveDoctorBooking = async (arg, sender_psid) =>{
+const saveProductBooking = async (arg, sender_psid) =>{
   let data=arg;
   data.ref= generateRandom(6);
   data.status = "pending";
-  db.collection('doctorbookings').add(data).then((success)=>{
+  db.collection('itemorders').add(data).then((success)=>{
       console.log("SAVED", success);
-      let text = "Thank you. We have received your appointment."+ "\u000A";
+      let text = "Thank you. We have received your order."+ "\u000A";
       text += "We will call you very soon to confirm"+ "\u000A";
       text +="Your Booking reference number is:" + data.ref;
       let response = {"text": text};
@@ -804,12 +771,12 @@ const saveDoctorBooking = async (arg, sender_psid) =>{
     });
   }
 /****************
-end doctor 
+end room 
 ****************/
 
 
 const hiReply =(sender_psid) => {
-  let response = {"text": "Hello user, you can make doctor booking"};
+  let response = {"text": "Hello user, you can make item order"};
   callSend(sender_psid, response);
 }
 
